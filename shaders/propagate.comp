@@ -1,0 +1,107 @@
+#version 450
+
+#extension GL_GOOGLE_include_directive : require
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_EXT_control_flow_attributes : enable
+#extension GL_KHR_shader_subgroup_arithmetic : enable
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+const uint num_particals = 1*1024 * 1024;
+const uint GRID_DIM = 1024;
+const uint grid_size = GRID_DIM * GRID_DIM + GRID_DIM;
+
+
+layout(binding = 0) uniform UniformBufferObject {
+    mat4 model;
+    mat4 view;
+    mat4 proj;
+    float time;
+} ubo;
+
+layout ( binding = 1, rgba8 ) uniform writeonly image2D resultImage;
+
+struct Particle {
+    vec3 pos;
+    uint cell;
+    vec3 velocity;
+    uint state;
+    float timeInfected;
+    uint cellCount;
+};
+
+layout(std430, binding = 2) buffer ParticleObject{
+    Particle particleArray[num_particals];
+};
+
+layout(std430, binding = 3) buffer gridCountObject{
+    uint gridCountArray[grid_size];
+};
+
+layout(binding = 4, rgba16) uniform  readonly image2D noiseTex;
+
+layout(std430, binding = 6) buffer SortedParticleObject{
+    Particle sortedParticleArray[num_particals];
+};
+
+const int HEIGHT = 1080;
+const int WIDTH = 1920;
+const float EPS = 0.000001;
+
+const uint LDSSize = 8192;
+const uint CellMax = 64;
+shared uint sdata[64][64];
+
+float random (vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);
+}
+
+const uint SUSPTIBLE = 0;
+const uint INFECTED = 1;
+const uint RECOVERED = 2;
+const uint REMOVED = 3;
+
+const float rFactor = 0.9995;
+
+void main()
+{   
+    uint cellIdx = gridCountArray[gl_GlobalInvocationID.x];
+    uint cellSize = gridCountArray[gl_GlobalInvocationID.x + 1] - cellIdx;
+
+    if (cellSize == 0) {
+        return;
+    }
+
+    cellSize = clamp(cellSize, 0, CellMax); // don't stomp the other cells LDS
+
+    bool sickCell = false;
+    bool withSuspitables = false;
+    for (int i=0; i < cellSize; i++) {
+        uint state = sortedParticleArray[cellIdx + i].state;
+        if (state == INFECTED) {
+            sickCell = true;
+        }
+        else if (state == SUSPTIBLE) {
+            withSuspitables = true;
+        }
+        sdata[gl_LocalInvocationID.x][i] = state;
+    }
+
+    memoryBarrierShared();
+    barrier();
+
+    if (sickCell && withSuspitables) {
+        for (int i=0; i < cellSize; i++) {
+            ivec2 noiseCoords = abs(ivec2(gl_GlobalInvocationID.x % 1024 + ubo.time, gl_GlobalInvocationID.x / 1024 + ubo.time)) % 256;
+            float rand = imageLoad(noiseTex, noiseCoords).w;
+            uint state = sdata[gl_LocalInvocationID.x][i];
+            if (state == SUSPTIBLE && rand < rFactor) {
+                sortedParticleArray[cellIdx + i].state = INFECTED;
+                sortedParticleArray[cellIdx + i].timeInfected = ubo.time;
+            }            
+        }
+    }
+
+
+}
+

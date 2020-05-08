@@ -1,0 +1,20 @@
+﻿  main.cpp
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(938,29): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(941,41): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(942,39): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(944,36): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(945,36): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(947,39): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(948,65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(955,33): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(956,40): warning C4244: '=': conversion from 'double' to 'glm::uint32', possible loss of data
+  vkTutorial.vcxproj -> C:\Users\user\source\repos\vkTutorial\x64\Debug\vkTutorial.exe
+  The system cannot find the path specified.

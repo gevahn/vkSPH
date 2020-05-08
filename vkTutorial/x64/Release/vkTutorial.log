@@ -1,0 +1,17 @@
+﻿  main.cpp
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(947,29): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(950,41): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(951,39): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(956,39): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(957,65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\user\source\repos\vkTutorial\vkTutorial\main.cpp(964,33): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 2778 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  vkTutorial.vcxproj -> C:\Users\user\source\repos\vkTutorial\x64\Release\vkTutorial.exe
+  prefix_sum_1.comp:105: error: 'gl_GlobalInvocationIndex' : undeclared identifier
+  prefix_sum_1.comp:133: error: 'sumIdx' : undeclared identifier
+  prefix_sum_1.comp:133: error: 'assign' :  cannot convert from ' temp float' to 'layout( column_major std430 offset=0) temp highp uint'
+  3 errors generated.
+  The system cannot find the path specified.
