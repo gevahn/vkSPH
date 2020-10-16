@@ -1449,7 +1449,7 @@ private:
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
             renderPassInfo.pClearValues = clearValues.data();
 
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            //vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);            
 
             //VkBuffer vertexBuffers[] = { vertexBuffer };
@@ -1459,10 +1459,10 @@ private:
             //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
             //vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
             
-            vkCmdEndRenderPass(commandBuffers[i]);            
+            //vkCmdEndRenderPass(commandBuffers[i]);            
             
-            transitionImageLayout(swapChainImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, commandBuffers[i]);
-            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, InsertIntoCellsComputePipeline);
+            //transitionImageLayout(swapChainImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, commandBuffers[i]);
+            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, InsertIntoCellsComputePipeline);
             vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1, &computeDescriptorSets[i], 0, nullptr);
 
             VkMemoryBarrier memoryBarrier = {};
@@ -1505,28 +1505,28 @@ private:
             //    0, nullptr,
             //    0, nullptr);
 
-            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, ReIndexComputePipeline);
-            vkCmdDispatch(commandBuffers[i], NUM_PARTICLES / 64 / 1, 1, 1);
-
-            vkCmdPipelineBarrier(commandBuffers[i], VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                0,
-                1, &memoryBarrier,
-                0, nullptr,
-                0, nullptr);
-
-            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, PropagateComputePipeline);
-            vkCmdDispatch(commandBuffers[i], (GRID_SIZE - 1024 ) / 64, 1, 1);
-
-            vkCmdPipelineBarrier(commandBuffers[i], VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                0,
-                1, &memoryBarrier,
-                0, nullptr,
-                0, nullptr);
-
-            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, RenderComputePipeline);
-            vkCmdDispatch(commandBuffers[i], NUM_PARTICLES / 64, 1, 1);
-
-            transitionImageLayout(swapChainImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, commandBuffers[i]);
+            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, ReIndexComputePipeline);
+            //vkCmdDispatch(commandBuffers[i], NUM_PARTICLES / 64 / 1, 1, 1);
+            //
+            //vkCmdPipelineBarrier(commandBuffers[i], VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+            //    0,
+            //    1, &memoryBarrier,
+            //    0, nullptr,
+            //    0, nullptr);
+            //
+            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, PropagateComputePipeline);
+            //vkCmdDispatch(commandBuffers[i], (GRID_SIZE - 1024 ) / 64, 1, 1);
+            //
+            //vkCmdPipelineBarrier(commandBuffers[i], VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+            //    0,
+            //    1, &memoryBarrier,
+            //    0, nullptr,
+            //    0, nullptr);
+            //
+            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, RenderComputePipeline);
+            //vkCmdDispatch(commandBuffers[i], NUM_PARTICLES / 64, 1, 1);
+            //
+            //transitionImageLayout(swapChainImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, commandBuffers[i]);
 
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to record command buffer!");

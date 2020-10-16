@@ -3,6 +3,8 @@
 #extension GL_GOOGLE_include_directive : require
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_KHR_shader_subgroup_arithmetic : enable
+#extension GL_KHR_memory_scope_semantics : enable
+
 
 layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 
@@ -103,26 +105,37 @@ void main()
     // save the sum of elements in the workgroup to update the other workgroups in the second pass
     if (gl_LocalInvocationIndex.x == gl_WorkGroupSize.x - 1) {
         sdata[0] = sumIdx + lastInGroup;
-        gridScratchArray[workgroupId] = addFlag(sumIdx + lastInGroup, 1);            
+        gridScratchArray[workgroupId] = addFlag(sumIdx + lastInGroup, 1);        
     }
-
     
-    uint inclusive = 0;    
-    for (int i=int(workgroupId) - 1; i >= 0;i--) {        
-        uint value;
-        uint flag;
-        do {
-            memoryBarrier();
-            value = gridScratchArray[i];
-            flag = getFlag(value);              
-        }  while (flag == 0);
-        inclusive += removeFlag(value);                
-        if (flag == 2) break;
+    if (gl_SubgroupID == 0) {
+        uint windowSize = min(gl_SubgroupSize, workgroupId - 1);
+        uint inclusive = 0;    
+        for (int i=workgroupId - 1; i >= 0;i-=windowSize) {     
+            if (gl_LocalInvocationID.x < windowSize) {
+                uint value;
+                uint flag;
+                do {        
+                    memoryBarrierBuffer();                
+                    value = gridScratchArray[i - gl_LocalInvocationID.x];
+                    flag = getFlag(value);              
+                }  while (subgroupAny(flag == 0));
+                barrier();
+                if (subgroupAll(flag == 1)) {
+                    inclusive += subgroupSum(removeFlag(value));
+                } else  {
+                    break;
+                }
+            }
+            windowSize = min(gl_SubgroupSize, i);
+        }
+        sdata[1]=inclusive;
     }
+    barrier();
 
-    gridCountArray[workgroupId * gl_WorkGroupSize.x + gl_LocalInvocationID.x] += inclusive;
+    gridCountArray[workgroupId * gl_WorkGroupSize.x + gl_LocalInvocationID.x] +=  sdata[1];
 
-    gridScratchArray[workgroupId] = addFlag(inclusive + sdata[0], 2);
+    gridScratchArray[workgroupId] = addFlag(sdata[1] + sdata[0], 2);
     
     
     
